@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 
 import Home from './Home';
-import Room from './Room';
+import Session from './Session';
 import './App.scss';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
       <div>cool</div>
       <Router>
         <Route exact path="/" component={Home} />
-        <Route path="/:roomid" component={Room} />
+        <Route path="/:sessionid" component={Session} />
       </Router>
     </div>
   );

@@ -3,7 +3,7 @@ import openSocket from 'socket.io-client';
 
 // const io = openSocket('http://localhost:3030/');
 
-class Room extends React.Component {
+class Session extends React.Component {
 	constructor() {
 		super();
 
@@ -11,8 +11,8 @@ class Room extends React.Component {
 
 	render() {
 		return (
-			<div>this is room</div>
+			<div>this is session</div>
 		);
 	}
 }
-export default Room;
+export default Session;
