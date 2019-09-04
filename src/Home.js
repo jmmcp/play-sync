@@ -15,6 +15,7 @@ class Home extends React.Component {
 	componentDidMount() {
 		console.log('mount home');
 		let socket = openSocket(process.env.REACT_APP_SOCKET_HOST);
+		console.log(process.env.REACT_APP_SOCKET_HOST);
 		this.setState({ socket: socket });
 	}
 
@@ -25,7 +26,7 @@ class Home extends React.Component {
 
 		socket.on('new-session-created', data => {
 			//this.setState({redirectTo: `/${data.name}`});
-			this.props.history.push('/'+data.name);
+			this.props.history.push('/' + data.name);
 		});
 	}
 

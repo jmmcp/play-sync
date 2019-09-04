@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -18,7 +19,7 @@ io.on('connection', client => {
 	client.on('session-page-reached', sessionid => {
 		//does the session exist in the master object?
 		client.emit('session-exists', sessionid in sessions);
-		if(sessionid in sessions) {
+		if (sessionid in sessions) {
 			client.join(sessionid);
 		}
 	});
@@ -38,7 +39,7 @@ function newSession() {
 		return randomatic('Aa', 4);
 	};
 	session.name = nameGen();
-	while(session.name in sessions) {
+	while (session.name in sessions) {
 		session.name = nameGen();
 	}
 	sessions[session.name] = session;
@@ -48,10 +49,8 @@ function destroySession(sessionid) {
 
 }
 
-
-const port = process.env.SOCKET_PORT || 3001;
-server.listen(port, "0.0.0.0", _ => {
+server.listen(process.env.SOCKET_PORT, _ => {
 	let rhost = server.address().address;
 	let rport = server.address().port;
-	console.log("listening on ", rhost+":"+rport);
+	console.log("socket listening on ", rhost + ":" + rport);
 });
