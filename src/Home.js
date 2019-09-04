@@ -7,8 +7,7 @@ class Home extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			socket: null,
-			redirectTo: null
+			socket: null
 		};
 	}
 
@@ -25,7 +24,6 @@ class Home extends React.Component {
 		socket.emit('new-session', null);
 
 		socket.on('new-session-created', data => {
-			//this.setState({redirectTo: `/${data.name}`});
 			this.props.history.push('/' + data.name);
 		});
 	}

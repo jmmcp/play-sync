@@ -1,18 +1,9 @@
-import React from 'react';
-import openSocket from 'socket.io-client';
-
-// const io = openSocket('http://localhost:3030/');
-
-class Session extends React.Component {
-	constructor() {
-		super();
-
-	}
-
-	render() {
-		return (
-			<div>this is session</div>
-		);
+class Session {
+	constructor(creator) {
+		this.clients = [];
+		this.creator = creator;
+		this.countdownTime = -1;
 	}
 }
-export default Session;
+
+module.exports = Session;
