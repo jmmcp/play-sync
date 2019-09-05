@@ -8,7 +8,7 @@ import './App.scss';
 function App() {
 	return (
 		<div className="App">
-			<div>cool</div>
+			<div>app</div>
 			<Router>
 				<Route exact path="/" component={Home} />
 				<Route path="/:sessionid" component={SessionPage} />

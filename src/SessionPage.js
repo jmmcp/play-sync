@@ -1,6 +1,9 @@
 import React from 'react';
 import openSocket from 'socket.io-client';
+import moment from 'moment';
+
 import User from './User';
+import NameSubmit from './NameSubmit';
 
 // const io = openSocket('http://localhost:3030/');
 
@@ -8,6 +11,18 @@ class SessionPage extends React.Component {
 	constructor() {
 		super();
 
+		this.state = {
+			exists: null,
+			username: null,
+			timer: {
+				time: -1,
+				name: ""
+			}
+		}
+
+		this.nameSubmitted = this.nameSubmitted.bind(this);
+		this.requestPause = this.requestPause.bind(this);
+		this.requestPlay = this.requestPlay.bind(this);
 	}
 
 	componentDidMount() {
@@ -18,11 +33,11 @@ class SessionPage extends React.Component {
 		// emit the url param
 		socket.emit('session-page-reached', this.props.match.params.sessionid);
 		socket.on('session-exists', exists => {
-			if (exists) {
-				console.log('it exists');
-			} else {
-				console.log('it doesn\'t exist');
-			}
+			this.setState({ exists: exists });
+		});
+
+		socket.on('username-in', username => {
+			this.setState({ username: username });
 		});
 
 		socket.on('user-joined', user => {
@@ -34,20 +49,55 @@ class SessionPage extends React.Component {
 		});
 
 		socket.on('timer-update', data => {
-			//TODO: timer-update
+			this.setState({ timer: data });
+			// is this where audio and stuff goes?
 		});
 
 		socket.on('timestamp-in', data => {
 			//TODO: timestamp-in
 		});
+	}
 
-		socket.on('')
+	nameSubmitted(name) {
+		this.state.socket.emit('username-out', name);
+	}
+
+	requestPause() {
+		this.state.socket.emit('pause-requested');
+	}
+
+	requestPlay() {
+		this.state.socket.emit('play-requested');
+	}
+
+	mainRender() {
+		return (
+			<div>
+				{this.state.username === null ?
+					<NameSubmit onSubmit={this.nameSubmitted} /> : null}
+				<div>this is session</div>
+				<button onClick={this.requestPause}>Request Pause</button>
+				<button onClick={this.requestPlay}>Request Play</button>
+				<div>
+					<div>{this.state.timer.name}</div>
+					<div>{this.state.timer.time}</div>
+				</div>
+			</div>
+		);
 	}
 
 	render() {
-		return (
-			<div>this is session</div>
-		);
+		if (this.state.exists === null) {
+			return <div>Connecting...</div>;
+		} else if (this.state.exists === true) {
+			return this.mainRender();
+		} else if (this.state.exists === false) {
+			return (
+				<div>
+					<div>Couldn't find session :v</div>
+				</div>
+			);
+		}
 	}
 }
 export default SessionPage;
