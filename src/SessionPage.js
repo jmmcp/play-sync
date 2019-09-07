@@ -4,6 +4,8 @@ import moment from 'moment';
 
 import User from './User';
 import NameSubmit from './NameSubmit';
+import MessageBox from './MessageBox';
+import './SessionPage.scss';
 
 // const io = openSocket('http://localhost:3030/');
 
@@ -16,9 +18,12 @@ class SessionPage extends React.Component {
 			username: null,
 			timer: {
 				time: -1,
-				name: ""
+				name: "",
+				userName: ""
 			}
 		}
+
+		this.messageBox = React.createRef();
 
 		this.nameSubmitted = this.nameSubmitted.bind(this);
 		this.requestPause = this.requestPause.bind(this);
@@ -56,6 +61,10 @@ class SessionPage extends React.Component {
 		socket.on('timestamp-in', data => {
 			//TODO: timestamp-in
 		});
+
+		socket.on('message', (content) => {
+			this.messageBox.current.addMessage(content);
+		});
 	}
 
 	nameSubmitted(name) {
@@ -72,7 +81,7 @@ class SessionPage extends React.Component {
 
 	mainRender() {
 		return (
-			<div>
+			<div className="session-page">
 				{this.state.username === null ?
 					<NameSubmit onSubmit={this.nameSubmitted} /> : null}
 				<div>this is session</div>
@@ -80,8 +89,11 @@ class SessionPage extends React.Component {
 				<button onClick={this.requestPlay}>Request Play</button>
 				<div>
 					<div>{this.state.timer.name}</div>
+					<div>{this.state.timer.userName}</div>
 					<div>{this.state.timer.time}</div>
+
 				</div>
+				<MessageBox ref={this.messageBox} />
 			</div>
 		);
 	}

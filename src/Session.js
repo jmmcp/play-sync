@@ -5,6 +5,7 @@ class Session {
 		this.creator = creator;
 		this.countdownTime = -1;
 		this.name = "";
+		this.timerRunning = false;
 	}
 
 	addClient(clientId) {

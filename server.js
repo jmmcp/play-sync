@@ -35,18 +35,25 @@ io.on('connection', client => {
 		sesh.addUser(user);
 		client.emit('username-in', username);
 		client.to(sesh.name).emit('user-joined', user);
+		client.to(sesh.name).emit('message', `User ${user.name} joined`);
 		let log = `User ${user.name} connected to room ${sesh.name}`;
 		console.log(log, `(total clients: ${sesh.clients.length})`);
 	});
 
 	client.on('pause-requested', _ => {
 		// TODO: pause-requested
-		sendTimerToRoom(getSessionOfClient(client.id).name, 'pause');
+		let sesh = getSessionOfClient(client.id);
+		if (sesh != undefined && !sesh.timerRunning) {
+			sendTimerToRoom(getSessionOfClient(client.id).name, 'pause');
+		}
 	});
 
 	client.on('play-requested', _ => {
 		// TODO: resume-requested
-		sendTimerToRoom(getSessionOfClient(client.id).name, 'play');
+		let sesh = getSessionOfClient(client.id);
+		if (sesh != undefined && !sesh.timerRunning) {
+			sendTimerToRoom(getSessionOfClient(client.id).name, 'play');
+		}
 	});
 
 	client.on('timestamp-in', _ => {
@@ -104,24 +111,34 @@ function getSessionOfClient(clientId) {
 
 
 
-async function sendTimerToRoom(room, timerName) {
+async function sendTimerToRoom(room, timerName, userName) {
+	let setTimerRunning = (t) => {
+		return new Promise((resolve, reject) => {
+			sessions[room].timerRunning = t;
+			resolve();
+		})
+	};
+
 	let sendCount = (count) => {
 		return new Promise((resolve, reject) => {
-			io.to(room).emit('timer-update', { time: count, name: timerName });
+			sessions[room].countdownTime = count;
+			io.to(room).emit('timer-update', { time: count, name: timerName, userName: userName });
 			resolve();
 		});
 	};
-	function delay() {
+	let delay = () => {
 		return new Promise(resolve => setTimeout(resolve, 1000));
 	}
 	// this could be a for loop, but this kind of looks pretty.
-	sendCount(5).then(delay)
+	setTimerRunning(true)
+		.then(_ => sendCount(5)).then(delay)
 		.then(_ => sendCount(4)).then(delay)
 		.then(_ => sendCount(3)).then(delay)
 		.then(_ => sendCount(2)).then(delay)
 		.then(_ => sendCount(1)).then(delay)
 		.then(_ => sendCount(0)).then(delay)
 		.then(_ => sendCount(-1))
+		.then(_ => setTimerRunning(false));
 }
 
 server.listen(process.env.SOCKET_PORT, _ => {
