@@ -2,13 +2,12 @@ import React from 'react';
 import openSocket from 'socket.io-client';
 import moment from 'moment';
 
-import User from './User';
-import Session from './Session';
 import NameSubmit from './NameSubmit';
 import MessageBox from './MessageBox';
 import './SessionPage.scss';
 
-
+const User = require('./User');
+const Session = require('./Session');
 
 // const io = openSocket('http://localhost:3030/');
 
