@@ -7,6 +7,8 @@ import NameSubmit from './NameSubmit';
 import MessageBox from './MessageBox';
 import './SessionPage.scss';
 
+
+
 // const io = openSocket('http://localhost:3030/');
 
 class SessionPage extends React.Component {
@@ -22,6 +24,14 @@ class SessionPage extends React.Component {
 				userName: ""
 			}
 		}
+		function loadAudio(name) {
+			return new Audio(process.env.REACT_APP_WEB_HOST +
+				"sounds/" + name + ".mp3");
+		}
+		this.fxPlayDing = loadAudio('play_ding');
+		this.fxPauseDing = loadAudio('pause_ding');
+		this.fxPlayDingFinal = loadAudio('play_ding_final');
+		this.fxPauseDingFinal = loadAudio('pause_ding_final');
 
 		this.messageBox = React.createRef();
 
@@ -56,6 +66,29 @@ class SessionPage extends React.Component {
 		socket.on('timer-update', data => {
 			this.setState({ timer: data });
 			// is this where audio and stuff goes?
+			console.log(data);
+			if (data.name === "play") {
+				if (data.time > 0) {
+					this.fxPlayDing.play();
+					document.title = `[${data.time}] - PLAY`;
+				} else if (data.time === 0) {
+					this.fxPlayDingFinal.play();
+					document.title = `[PLAY NOW]`;
+				} else if (data.time === -1) {
+
+				}
+			} else if (data.name === "pause") {
+				if (data.time > 0) {
+					this.fxPauseDing.play();
+					document.title = `[${data.time}] - PAUSE`;
+				} else if (data.time === 0) {
+					this.fxPauseDingFinal.play();
+					document.title = `[PAUSE NOW]`;
+				} else if (data.time === -1) {
+
+				}
+			}
+
 		});
 
 		socket.on('timestamp-in', data => {
@@ -85,8 +118,8 @@ class SessionPage extends React.Component {
 				{this.state.username === null ?
 					<NameSubmit onSubmit={this.nameSubmitted} /> : null}
 				<div>this is session</div>
-				<button onClick={this.requestPause}>Request Pause</button>
-				<button onClick={this.requestPlay}>Request Play</button>
+				<button className="req-button" onClick={this.requestPause}>Request Pause</button>
+				<button className="req-button" onClick={this.requestPlay}>Request Play</button>
 				<div>
 					<div>{this.state.timer.name}</div>
 					<div>{this.state.timer.userName}</div>

@@ -131,8 +131,8 @@ async function sendTimerToRoom(room, timerName, userName) {
 	}
 	// this could be a for loop, but this kind of looks pretty.
 	setTimerRunning(true)
-		.then(_ => sendCount(5)).then(delay)
-		.then(_ => sendCount(4)).then(delay)
+		//.then(_ => sendCount(5)).then(delay)
+		//.then(_ => sendCount(4)).then(delay)
 		.then(_ => sendCount(3)).then(delay)
 		.then(_ => sendCount(2)).then(delay)
 		.then(_ => sendCount(1)).then(delay)
