@@ -21,10 +21,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon server.js",
+	"server": "nodemon server.js",
+	"pull": "git pull",
     "deploy": "pm2 start ecosystem.config.js",
     "dev": "run-p server start",
-    "production": "run-s build deploy"
+    "production": "run-s pull build deploy"
   },
   "eslintConfig": {
     "extends": "react-app"

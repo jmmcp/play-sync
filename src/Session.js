@@ -1,4 +1,4 @@
-class Session {
+export default class Session {
 	constructor(creator) {
 		this.clients = []; // all clients, including ones without users...
 		this.users = [];
@@ -37,5 +37,3 @@ class Session {
 		return this.users.filter(user => user.id === clientId)[0];
 	}
 }
-
-module.exports = Session;
