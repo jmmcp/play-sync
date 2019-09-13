@@ -2,7 +2,7 @@ module.exports = {
 	apps: [
 		{
 			name: 'Socket',
-			script: 'server.js',
+			script: 'dist/server.js',
 			instances: 1,
 			autorestart: true,
 			watch: true,
@@ -10,7 +10,7 @@ module.exports = {
 		},
 		{
 			name: 'Static',
-			script: 'production-server.js',
+			script: 'dist/production-server.js',
 			instances: 1,
 			autorestart: true,
 			watch: true,

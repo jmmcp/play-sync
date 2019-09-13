@@ -1,13 +1,16 @@
 require('dotenv').config();
-const express = require('express');
+import express from 'express';
+import http from 'http';
+import socketio from 'socket.io';
+import randomatic from 'randomatic';
+
+import Session from './src/Session';
+import User from './src/User';
+
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const server = http.createServer(app);
+const io = socketio(server);
 
-const randomatic = require('randomatic');
-
-const Session = require('./src/Session');
-const User = require('./src/User');
 let sessions = {};
 let clientsInSessions = {}; // client.id : sessionid
 

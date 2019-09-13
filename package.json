@@ -2,6 +2,7 @@
   "name": "play-sync",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
@@ -21,11 +22,13 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon server.js",
-    "pull": "git pull",
+	"dev-server": "nodemon server.js",
+	"dev": "run-p dev-server start",
+	"pull": "git pull",
+	"build-server": "babel server.js production-server.js -d dist",
+	"build-classes": "babel src/Session.js src/User.js -d dist/src",
     "deploy": "pm2 start ecosystem.config.js",
-    "dev": "run-p server start",
-    "production": "run-s pull build deploy"
+    "production": "run-s pull build-server build-classes build deploy"
   },
   "eslintConfig": {
     "extends": "react-app"
