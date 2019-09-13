@@ -4,7 +4,9 @@ class Session {
 		this.users = [];
 		this.creator = creator;
 		this.countdownTime = -1;
-		this.name = "";
+		this.countdownName = "pause";
+		this.countdownRequester = "";
+		this.name = ""; // xCwL
 		this.timerRunning = false;
 	}
 

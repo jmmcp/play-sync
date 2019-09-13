@@ -34,7 +34,7 @@ io.on('connection', client => {
 		const sesh = getSessionOfClient(client.id);
 		sesh.addUser(user);
 		client.emit('username-in', username);
-		client.to(sesh.name).emit('user-joined', user);
+		sendSessionUpdate(sesh.name);
 		client.to(sesh.name).emit('message', `User ${user.name} joined`);
 		let log = `User ${user.name} connected to room ${sesh.name}`;
 		console.log(log, `(total clients: ${sesh.clients.length})`);
@@ -44,7 +44,8 @@ io.on('connection', client => {
 		// TODO: pause-requested
 		let sesh = getSessionOfClient(client.id);
 		if (sesh != undefined && !sesh.timerRunning) {
-			sendTimerToRoom(getSessionOfClient(client.id).name, 'pause');
+			const senderName = getSessionOfClient(client.id).name;
+			sendTimerToRoom(senderName, 'pause');
 		}
 	});
 
@@ -52,7 +53,8 @@ io.on('connection', client => {
 		// TODO: resume-requested
 		let sesh = getSessionOfClient(client.id);
 		if (sesh != undefined && !sesh.timerRunning) {
-			sendTimerToRoom(getSessionOfClient(client.id).name, 'play');
+			const senderName = getSessionOfClient(client.id).name;
+			sendTimerToRoom(senderName, 'play');
 		}
 	});
 
@@ -99,6 +101,10 @@ function newSession(creatorId) {
 	return session;
 }
 
+function sendSessionUpdate(sessionName) {
+	io.to(sessionName).emit('session-update', sessions[sessionName]);
+}
+
 // takes either a string or a Session
 function destroySession(s) {
 	const seshId = typeof s === Session ? s.name : s;
@@ -111,7 +117,7 @@ function getSessionOfClient(clientId) {
 
 
 
-async function sendTimerToRoom(room, timerName, userName) {
+async function sendTimerToRoom(room, countdownName, userName) {
 	let setTimerRunning = (t) => {
 		return new Promise((resolve, reject) => {
 			sessions[room].timerRunning = t;
@@ -121,8 +127,14 @@ async function sendTimerToRoom(room, timerName, userName) {
 
 	let sendCount = (count) => {
 		return new Promise((resolve, reject) => {
+			if (!(room in sessions)) {
+				reject();
+				return;
+			}
 			sessions[room].countdownTime = count;
-			io.to(room).emit('timer-update', { time: count, name: timerName, userName: userName });
+			sessions[room].countdownName = countdownName;
+			sessions[room].countdownRequester = userName;
+			io.to(room).emit('timer-update', sessions[room]);
 			resolve();
 		});
 	};
@@ -138,7 +150,11 @@ async function sendTimerToRoom(room, timerName, userName) {
 		.then(_ => sendCount(1)).then(delay)
 		.then(_ => sendCount(0)).then(delay)
 		.then(_ => sendCount(-1))
-		.then(_ => setTimerRunning(false));
+		.then(_ => setTimerRunning(false))
+		.catch(reason => {
+			// it's likely that a room was closed
+			// in the middle of a timer for it.
+		});
 }
 
 server.listen(process.env.SOCKET_PORT, _ => {
